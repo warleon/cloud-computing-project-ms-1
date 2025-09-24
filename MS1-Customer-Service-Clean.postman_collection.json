@@ -1,0 +1,194 @@
+{
+  "info": {
+    "name": "MS1 - Customer Service API",
+    "description": "Colección completa de APIs para el microservicio MS1",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health & Status",
+      "item": [
+        {
+          "name": "Service Information",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Customer Management",
+      "item": [
+        {
+          "name": "Create Customer - Basic",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.collectionVariables.set('customerId', responseJson.data.id);",
+                  "    console.log('Customer ID saved:', responseJson.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"María\",\n  \"lastName\": \"González\",\n  \"email\": \"maria.gonzalez@test.com\",\n  \"phone\": \"+57 300 123 4567\",\n  \"dateOfBirth\": \"1992-08-20\",\n  \"nationalId\": \"1234567890\",\n  \"address\": {\n    \"street\": \"Carrera 15 #85-30\",\n    \"city\": \"Bogotá\",\n    \"state\": \"Cundinamarca\",\n    \"postalCode\": \"110221\",\n    \"country\": \"Colombia\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+57 300 555 7777\",\n  \"address\": {\n    \"street\": \"Nueva Dirección #123-45\",\n    \"city\": \"Cali\",\n    \"state\": \"Valle del Cauca\",\n    \"postalCode\": \"760001\",\n    \"country\": \"Colombia\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "{{customerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Customer Accounts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/{{customerId}}/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "{{customerId}}", "accounts"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 Search",
+      "item": [
+        {
+          "name": "List All Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            }
+          }
+        },
+        {
+          "name": "Search by Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers?q=María",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"],
+              "query": [
+                {"key": "q", "value": "María"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Tests",
+      "item": [
+        {
+          "name": "Test Email Uniqueness",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Pedro\",\n  \"lastName\": \"Ramírez\",\n  \"email\": \"maria.gonzalez@test.com\",\n  \"phone\": \"+57 300 555 1234\",\n  \"dateOfBirth\": \"1988-03-15\",\n  \"nationalId\": \"5555555555\",\n  \"address\": {\n    \"street\": \"Calle Test\",\n    \"city\": \"Medellín\",\n    \"country\": \"Colombia\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

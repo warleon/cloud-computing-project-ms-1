@@ -1,0 +1,108 @@
+# Docker Compose para MS1 - Customer Service
+version: '3.8'
+
+services:
+  # MS1 - Customer Service
+  ms1-customer-service:
+    build: .
+    container_name: ms1-customer-service
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/customer_service_db?authSource=admin
+      - MS2_ACCOUNTS_URL=http://ms2-accounts:3001
+      - MS4_COMPLIANCE_URL=http://ms4-compliance:3003
+      - RATE_LIMIT_WINDOW_MS=900000
+      - RATE_LIMIT_MAX_REQUESTS=100
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # MongoDB Database
+  mongodb:
+    image: mongo:7-jammy
+    container_name: ms1-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_DATABASE=customer_service_db
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # MongoDB Admin Interface (optional)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: ms1-mongo-express
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password123
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:password123@mongodb:27017/
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    profiles:
+      - admin
+
+# Simuladores de microservicios externos para desarrollo/testing
+  # Simulador MS2 - Accounts Service
+  ms2-simulator:
+    image: mockserver/mockserver:latest
+    container_name: ms2-accounts-simulator
+    ports:
+      - "3001:1080"
+    environment:
+      - MOCKSERVER_INITIALIZATION_JSON_PATH=/config/ms2-init.json
+    volumes:
+      - ./docker/mock-servers/ms2-accounts.json:/config/ms2-init.json:ro
+    networks:
+      - microservices-network
+    profiles:
+      - simulators
+
+  # Simulador MS4 - Compliance Service
+  ms4-simulator:
+    image: mockserver/mockserver:latest
+    container_name: ms4-compliance-simulator
+    ports:
+      - "3003:1080"
+    environment:
+      - MOCKSERVER_INITIALIZATION_JSON_PATH=/config/ms4-init.json
+    volumes:
+      - ./docker/mock-servers/ms4-compliance.json:/config/ms4-init.json:ro
+    networks:
+      - microservices-network
+    profiles:
+      - simulators
+
+networks:
+  microservices-network:
+    driver: bridge
+    name: ms-network
+
+volumes:
+  mongodb_data:
+    driver: local
