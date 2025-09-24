@@ -42,6 +42,15 @@ router.post('/',
 );
 
 /**
+ * @route   GET /api/customers/by-national-id/:nationalId
+ * @desc    Obtener cliente por número de identificación nacional
+ * @access  Private
+ */
+router.get('/by-national-id/:nationalId', 
+  customerController.getCustomerByNationalId
+);
+
+/**
  * @route   GET /api/customers/:id
  * @desc    Obtener detalles de un cliente por ID
  * @access  Private

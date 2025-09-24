@@ -274,8 +274,6 @@ const customerSchema = new Schema<ICustomer>({
 });
 
 // Índices para optimización de consultas
-customerSchema.index({ email: 1 });
-customerSchema.index({ nationalId: 1 });
 customerSchema.index({ phone: 1 });
 customerSchema.index({ status: 1 });
 customerSchema.index({ complianceStatus: 1 });

@@ -19,8 +19,9 @@ export const helmetConfig = helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "data:"],
+      scriptSrc: ["'self'", "https://cdn.tailwindcss.com"],
       imgSrc: ["'self'", "data:", "https:"],
     },
   },
@@ -61,12 +62,7 @@ export const createCustomerRateLimit = rateLimit({
     retryAfter: '1 hour'
   },
   standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req: Request) => {
-    // Usar IP + email si está disponible para mayor precisión
-    const email = req.body?.email || '';
-    return `${req.ip}-${email}`;
-  }
+  legacyHeaders: false
 });
 
 // Middleware para validar Content-Type en requests con body
@@ -136,7 +132,7 @@ export const sanitizeInput = (req: Request, res: Response, next: NextFunction): 
     } else if (typeof value === 'object' && value !== null) {
       const sanitizedObj: any = Array.isArray(value) ? [] : {};
       for (const key in value) {
-        if (value.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) {
           sanitizedObj[key] = sanitizeValue(value[key]);
         }
       }
@@ -152,7 +148,7 @@ export const sanitizeInput = (req: Request, res: Response, next: NextFunction): 
     const sanitizedQuery = sanitizeValue(req.query);
     // Reemplazar cada propiedad individualmente ya que req.query es readonly
     for (const key in req.query) {
-      if (req.query.hasOwnProperty(key) && sanitizedQuery.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(req.query, key) && Object.prototype.hasOwnProperty.call(sanitizedQuery, key)) {
         (req.query as any)[key] = sanitizedQuery[key];
       }
     }

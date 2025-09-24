@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BankCloud - Customer Management System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="./css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-university"></i>
+                <span>BankCloud</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#dashboard" class="nav-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="#customers" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Clientes
+                </a>
+                <a href="#reports" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    Reportes
+                </a>
+                <a href="#settings" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    Configuración
+                </a>
+            </nav>
+            <div class="nav-user">
+                <i class="fas fa-user-circle"></i>
+                <span>Admin</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-tachometer-alt"></i> Panel Principal</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#overview" class="sidebar-link active">Resumen General</a></li>
+                    <li><a href="#analytics" class="sidebar-link">Analíticas</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3><i class="fas fa-users"></i> Gestión de Clientes</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#customer-list" class="sidebar-link">Lista de Clientes</a></li>
+                    <li><a href="#new-customer" class="sidebar-link">Nuevo Cliente</a></li>
+                    <li><a href="#kyc-documents" class="sidebar-link">Documentos KYC</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3><i class="fas fa-shield-alt"></i> Compliance</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#compliance-status" class="sidebar-link">Estado Compliance</a></li>
+                    <li><a href="#audit-trail" class="sidebar-link">Auditoría</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Overview -->
+            <div id="dashboard-section" class="content-section active">
+                <div class="page-header">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard - Sistema de Clientes</h1>
+                    <p>Gestión integral de clientes bancarios</p>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon customers">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-customers">-</h3>
+                            <p>Total Clientes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon active">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="active-customers">-</h3>
+                            <p>Clientes Activos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon compliance">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="compliance-pending">-</h3>
+                            <p>Compliance Pendiente</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon accounts">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="linked-accounts">-</h3>
+                            <p>Cuentas Vinculadas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="system-status">
+                    <h2><i class="fas fa-server"></i> Estado del Sistema</h2>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-indicator" id="api-status"></div>
+                            <div class="status-info">
+                                <h4>Customer Service API</h4>
+                                <p id="api-status-text">Verificando...</p>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-indicator" id="db-status"></div>
+                            <div class="status-info">
+                                <h4>Base de Datos MongoDB</h4>
+                                <p id="db-status-text">Verificando...</p>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-indicator" id="external-status"></div>
+                            <div class="status-info">
+                                <h4>Servicios Externos</h4>
+                                <p id="external-status-text">Verificando...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Management Section -->
+            <div id="customers-section" class="content-section">
+                <div class="page-header">
+                    <h1><i class="fas fa-users"></i> Gestión de Clientes</h1>
+                    <div class="header-buttons">
+                        <button class="btn-primary" onclick="showNewCustomerForm()">
+                            <i class="fas fa-plus"></i> Nuevo Cliente
+                        </button>
+                        <a href="/customer-portal/index.html" target="_blank" class="btn-secondary">
+                            <i class="fas fa-user"></i> Vista Cliente
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="search-filters">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="customer-search" placeholder="Buscar por nombre, email o teléfono...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="compliance-filter">
+                            <option value="">Todos los estados</option>
+                            <option value="approved">Aprobado</option>
+                            <option value="pending">Pendiente</option>
+                            <option value="rejected">Rechazado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Customer Table -->
+                <div class="table-container">
+                    <table class="data-table" id="customers-table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Estado Compliance</th>
+                                <th>Cuentas</th>
+                                <th>Registro</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customers-tbody">
+                            <tr class="loading-row">
+                                <td colspan="7">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    Cargando clientes...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="btn-pagination" id="prev-page" disabled>
+                        <i class="fas fa-chevron-left"></i> Anterior
+                    </button>
+                    <span class="page-info">
+                        Página <span id="current-page">1</span> de <span id="total-pages">1</span>
+                    </span>
+                    <button class="btn-pagination" id="next-page" disabled>
+                        Siguiente <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for New Customer -->
+    <div id="customer-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Nuevo Cliente Bancario</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="customer-form" class="customer-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="customer-name">
+                            <i class="fas fa-user"></i> Nombre Completo *
+                        </label>
+                        <input type="text" id="customer-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-email">
+                            <i class="fas fa-envelope"></i> Email *
+                        </label>
+                        <input type="email" id="customer-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-phone">
+                            <i class="fas fa-phone"></i> Teléfono *
+                        </label>
+                        <input type="tel" id="customer-phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-birth">
+                            <i class="fas fa-calendar"></i> Fecha de Nacimiento
+                        </label>
+                        <input type="date" id="customer-birth" name="dateOfBirth">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="customer-address">
+                            <i class="fas fa-map-marker-alt"></i> Dirección
+                        </label>
+                        <textarea id="customer-address" name="address" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-bell"></i> Preferencias de Notificaciones</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="email-notifications" name="emailNotifications" checked>
+                            <span class="checkmark"></span>
+                            Notificaciones por Email
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="sms-notifications" name="smsNotifications">
+                            <span class="checkmark"></span>
+                            Notificaciones SMS
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="marketing-communications" name="marketingCommunications">
+                            <span class="checkmark"></span>
+                            Comunicaciones de Marketing
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeCustomerModal()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Crear Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-3x"></i>
+            <p>Procesando...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="./js/api.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/customers.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>

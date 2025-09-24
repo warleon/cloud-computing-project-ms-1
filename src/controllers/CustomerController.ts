@@ -76,6 +76,26 @@ class CustomerController {
   });
 
   /**
+   * Obtener cliente por número de identificación nacional
+   * GET /customers/by-national-id/:nationalId
+   */
+  public getCustomerByNationalId = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { nationalId } = req.params;
+
+    if (!nationalId) {
+      return next(new AppError('National ID is required', 400));
+    }
+
+    const customer = await Customer.findOne({ nationalId });
+    
+    if (!customer) {
+      return next(new AppError('Customer not found with this National ID', 404));
+    }
+
+    sendSuccess(res, customer.toObject(), 'Customer retrieved successfully');
+  });
+
+  /**
    * Actualizar información de un cliente
    * PUT /customers/:id
    */

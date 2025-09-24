@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Portal Cliente</title>
+</head>
+<body>
+    <h1>Debug Portal Cliente</h1>
+    <div id="debug-info">
+        <p>Cargando información de debug...</p>
+    </div>
+
+    <script>
+        console.log('Debug page loaded');
+        
+        // Test API call
+        fetch('http://localhost:3000/api/customers/by-national-id/1234567890')
+            .then(response => {
+                console.log('API Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('API Response data:', data);
+                document.getElementById('debug-info').innerHTML = `
+                    <h2>API Response:</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            })
+            .catch(error => {
+                console.error('API Error:', error);
+                document.getElementById('debug-info').innerHTML = `
+                    <h2>API Error:</h2>
+                    <p>${error.message}</p>
+                `;
+            });
+    </script>
+</body>
+</html>

@@ -9,6 +9,8 @@ yarn-error.log*
 dist/
 build/
 *.tsbuildinfo
+out/
+lib/
 
 # Environment variables (CRITICAL - contiene credenciales)
 .env
@@ -50,6 +52,8 @@ Thumbs.db
 
 # Docker (mantener docker-compose.yml pero ignorar overrides locales)
 docker-compose.override.yml
+.dockerignore.local
+*.dockerfile.local
 
 # Database files
 *.db
@@ -88,3 +92,18 @@ coverage/
 # Misc
 .eslintcache
 .prettiercache
+
+# TypeScript
+*.d.ts.map
+*.js.map
+.tsbuildinfo
+
+# Package manager
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.pnpm-store/
+
+# Monitoring and analytics
+.vercel/
+.netlify/

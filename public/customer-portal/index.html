@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Portal Bancario - BankCloud</title>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Customer Portal Styles -->
+    <link rel="stylesheet" href="./styles.css">
+    
+    <!-- Tailwind CSS CDN (backup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configurar Tailwind inmediatamente
+        if (typeof tailwind !== 'undefined') {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'bank-blue': '#1e40af',
+                            'bank-gold': '#f59e0b',
+                            'bank-dark': '#1e3a8a',
+                            'bank-light': '#3b82f6',
+                            'success': '#10b981',
+                            'warning': '#f97316',
+                            'danger': '#ef4444',
+                        },
+                        fontFamily: {
+                            'bank': ['Inter', 'Segoe UI', 'system-ui', 'sans-serif']
+                        },
+                        boxShadow: {
+                            'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                            'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        /* Fallback crítico para mostrar contenido */
+        .view { display: none !important; }
+        .view.active { display: block !important; }
+        
+        /* Asegurar que el main tenga contenido visible */
+        main { min-height: 80vh; padding: 24px; }
+        
+        /* Grid básico */
+        .grid { display: grid; gap: 24px; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        
+        /* Tarjetas básicas */
+        .bg-white { background-color: white; }
+        .rounded-xl { border-radius: 12px; }
+        .shadow-card { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .p-6 { padding: 24px; }
+        .mb-8 { margin-bottom: 32px; }
+        .mb-6 { margin-bottom: 24px; }
+        .mb-4 { margin-bottom: 16px; }
+        .mb-2 { margin-bottom: 8px; }
+        
+        /* Gradiente de bienvenida */
+        .bg-gradient-to-r {
+            background: linear-gradient(to right, #1e40af, #1e3a8a);
+        }
+        .from-bank-blue { background-color: #1e40af; }
+        .to-bank-dark { background-color: #1e3a8a; }
+        .text-white { color: white; }
+        .text-2xl { font-size: 1.5rem; }
+        .font-bold { font-weight: 700; }
+        
+        /* Colores básicos */
+        .bg-gray-50 { background-color: #f9fafb; }
+        .text-gray-900 { color: #111827; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-500 { color: #6b7280; }
+        .text-blue-100 { color: #dbeafe; }
+        
+        /* Flexbox */
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .space-x-4 > * + * { margin-left: 16px; }
+        .space-y-4 > * + * { margin-top: 16px; }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Custom animations */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        /* Loading skeleton */
+        @keyframes skeleton {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+        }
+        
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: skeleton 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="font-bank bg-gray-50 min-h-screen">
+    <!-- Navigation Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-bank-blue rounded-lg flex items-center justify-center">
+                            <i class="fas fa-university text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">BankCloud</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#dashboard" class="nav-link active nav-item" data-view="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>Inicio</span>
+                    </a>
+                    <a href="#accounts" class="nav-link nav-item" data-view="accounts">
+                        <i class="fas fa-credit-card"></i>
+                        <span>Mis Cuentas</span>
+                    </a>
+                    <a href="#profile" class="nav-link nav-item" data-view="profile">
+                        <i class="fas fa-user"></i>
+                        <span>Mi Perfil</span>
+                    </a>
+                    <a href="#transactions" class="nav-link nav-item" data-view="transactions">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Movimientos</span>
+                    </a>
+                </nav>
+
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                    </button>
+                    
+                    <div class="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 rounded-lg p-2">
+                        <div class="w-8 h-8 bg-bank-blue rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium" id="user-avatar">JP</span>
+                        </div>
+                        <div class="hidden md:block">
+                            <p class="text-sm font-medium text-gray-900" id="user-name">Juan Pérez</p>
+                            <p class="text-xs text-gray-500">Cliente Premium</p>
+                        </div>
+                        <button id="logoutBtn" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="md:hidden border-t border-gray-200">
+            <div class="flex justify-around py-3">
+                <a href="#dashboard" class="mobile-nav-link active" data-view="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="#accounts" class="mobile-nav-link" data-view="accounts">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Cuentas</span>
+                </a>
+                <a href="#profile" class="mobile-nav-link" data-view="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Perfil</span>
+                </a>
+                <a href="#transactions" class="mobile-nav-link" data-view="transactions">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Movimientos</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view active">
+            <!-- Welcome Section -->
+            <div class="mb-8">
+                <div class="bg-gradient-to-r from-bank-blue to-bank-dark rounded-2xl p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold mb-2">¡Hola, <span id="welcome-name">Juan</span>!</h1>
+                            <p class="text-blue-100">Bienvenido a tu portal bancario personal</p>
+                        </div>
+                        <div class="hidden md:block">
+                            <div class="text-right">
+                                <p class="text-blue-100 text-sm">Último acceso</p>
+                                <p class="text-white font-medium" id="last-access">Hoy, 10:30 AM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Balance Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Total Balance -->
+                <div class="bg-white rounded-xl shadow-card p-6 hover:shadow-card-hover transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-wallet text-green-600"></i>
+                        </div>
+                        <button class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-1">Balance Total</h3>
+                        <p class="text-2xl font-bold text-gray-900" id="total-balance">$••••••</p>
+                        <p class="text-sm text-green-600 flex items-center mt-2">
+                            <i class="fas fa-arrow-up text-xs mr-1"></i>
+                            +2.5% este mes
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Available Balance -->
+                <div class="bg-white rounded-xl shadow-card p-6 hover:shadow-card-hover transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-coins text-blue-600"></i>
+                        </div>
+                        <button class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-1">Saldo Disponible</h3>
+                        <p class="text-2xl font-bold text-gray-900" id="available-balance">$••••••</p>
+                        <p class="text-sm text-gray-500 mt-2">Cuenta Corriente Principal</p>
+                    </div>
+                </div>
+
+                <!-- Credit Limit -->
+                <div class="bg-white rounded-xl shadow-card p-6 hover:shadow-card-hover transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-credit-card text-orange-600"></i>
+                        </div>
+                        <button class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-chart-line"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-1">Límite de Crédito</h3>
+                        <p class="text-2xl font-bold text-gray-900" id="credit-limit">$••••••</p>
+                        <div class="flex items-center mt-2">
+                            <div class="flex-1 bg-gray-200 rounded-full h-2 mr-2">
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: 30%" id="credit-usage"></div>
+                            </div>
+                            <span class="text-sm text-gray-500">30%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-6">Acciones Rápidas</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button class="quick-action-btn">
+                        <i class="fas fa-paper-plane text-blue-600"></i>
+                        <span>Transferir</span>
+                    </button>
+                    <button class="quick-action-btn">
+                        <i class="fas fa-mobile-alt text-green-600"></i>
+                        <span>Pagar Servicios</span>
+                    </button>
+                    <button class="quick-action-btn">
+                        <i class="fas fa-qrcode text-purple-600"></i>
+                        <span>Pagar QR</span>
+                    </button>
+                    <button class="quick-action-btn">
+                        <i class="fas fa-download text-indigo-600"></i>
+                        <span>Estados</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="bg-white rounded-xl shadow-card p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Últimos Movimientos</h3>
+                    <button class="text-bank-blue hover:text-bank-dark font-medium text-sm">
+                        Ver todos
+                    </button>
+                </div>
+                <div class="space-y-4" id="recent-transactions">
+                    <!-- Transaction items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Accounts View -->
+        <div id="accounts-view" class="view">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Mis Cuentas</h1>
+                <p class="text-gray-600">Gestiona todas tus cuentas bancarias</p>
+            </div>
+
+            <!-- Account Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="accounts-container">
+                <!-- Account cards will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="profile-view" class="view">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Mi Perfil</h1>
+                <p class="text-gray-600">Administra tu información personal y preferencias</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Profile Info -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-card p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Información Personal</h3>
+                            <button class="btn-secondary" onclick="toggleEditProfile()">
+                                <i class="fas fa-edit mr-2"></i>Editar
+                            </button>
+                        </div>
+                        
+                        <form id="profile-form" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label class="form-label">Nombre Completo</label>
+                                    <input type="text" class="form-input" id="profile-name" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-input" id="profile-email" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-input" id="profile-phone" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Fecha de Nacimiento</label>
+                                    <input type="date" class="form-input" id="profile-birth" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Dirección</label>
+                                <textarea class="form-input" rows="3" id="profile-address" readonly></textarea>
+                            </div>
+                            
+                            <div class="hidden" id="profile-actions">
+                                <div class="flex space-x-3">
+                                    <button type="submit" class="btn-primary">
+                                        <i class="fas fa-save mr-2"></i>Guardar Cambios
+                                    </button>
+                                    <button type="button" class="btn-secondary" onclick="cancelEditProfile()">
+                                        <i class="fas fa-times mr-2"></i>Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Security & Preferences -->
+                <div class="space-y-6">
+                    <!-- Security Settings -->
+                    <div class="bg-white rounded-xl shadow-card p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Seguridad</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Autenticación en dos pasos</p>
+                                    <p class="text-sm text-gray-500">Protege tu cuenta con 2FA</p>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="2fa-toggle" checked>
+                                    <label for="2fa-toggle"></label>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t pt-4">
+                                <button class="text-bank-blue hover:text-bank-dark font-medium text-sm">
+                                    <i class="fas fa-key mr-2"></i>Cambiar Contraseña
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification Preferences -->
+                    <div class="bg-white rounded-xl shadow-card p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Notificaciones</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">Email</p>
+                                    <p class="text-sm text-gray-500">Recibir por correo</p>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="email-notifications" checked>
+                                    <label for="email-notifications"></label>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-medium text-gray-900">SMS</p>
+                                    <p class="text-sm text-gray-500">Recibir por mensaje</p>
+                                </div>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="sms-notifications">
+                                    <label for="sms-notifications"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions View -->
+        <div id="transactions-view" class="view">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Historial de Movimientos</h1>
+                <p class="text-gray-600">Consulta todos tus movimientos bancarios</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="bg-white rounded-xl shadow-card p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Desde</label>
+                        <input type="date" class="form-input" id="date-from">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hasta</label>
+                        <input type="date" class="form-input" id="date-to">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-input" id="transaction-type">
+                            <option value="">Todos</option>
+                            <option value="credit">Ingresos</option>
+                            <option value="debit">Gastos</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button class="btn-primary w-full">
+                            <i class="fas fa-search mr-2"></i>Filtrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="bg-white rounded-xl shadow-card overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Movimientos</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="transactions-tbody">
+                            <!-- Transactions will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-4">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-bank-blue"></div>
+            <span class="text-gray-700">Cargando...</span>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Scripts -->
+    <script src="./lib/utils.js"></script>
+    <script src="./lib/customer-api.js"></script>
+    <script src="./components/ui-components.js"></script>
+    <script src="./customer-app.js"></script>
+</body>
+</html>

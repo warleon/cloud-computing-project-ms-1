@@ -36,6 +36,7 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy only production dependencies and built application
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/public ./public
 COPY --chown=nodejs:nodejs package*.json ./
 
 # Copy .env.example as template (real .env should be provided at runtime)
