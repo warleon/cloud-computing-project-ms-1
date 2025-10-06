@@ -1,7 +1,7 @@
 // API Client for Customer Service
 class CustomerAPI {
     constructor() {
-        this.baseURL = 'http://localhost:3000/api';
+    this.baseURL = 'http://cloud-computing-project-LB-1422038316.us-east-1.elb.amazonaws.com:5001/api';
         this.headers = {
             'Content-Type': 'application/json',
         };

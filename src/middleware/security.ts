@@ -21,7 +21,9 @@ export const helmetConfig = helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
       fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "data:"],
-      scriptSrc: ["'self'", "https://cdn.tailwindcss.com"],
+  scriptSrc: ["'self'", "https://cdn.tailwindcss.com", "https://cdn.redoc.ly"],
+  // Allow external script elements explicitly (CSP Level 3)
+  scriptSrcElem: ["'self'", "https://cdn.tailwindcss.com", "https://cdn.redoc.ly"],
       imgSrc: ["'self'", "data:", "https:"],
     },
   },
@@ -52,18 +54,13 @@ export const generalRateLimit = rateLimit({
   }
 });
 
-// Rate limiting más estricto para creación de clientes
-export const createCustomerRateLimit = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hora
-  max: 10, // máximo 10 clientes por hora por IP
-  message: {
-    success: false,
-    message: 'Too many customer creation attempts from this IP, please try again later.',
-    retryAfter: '1 hour'
-  },
-  standardHeaders: true,
-  legacyHeaders: false
-});
+// NOTE: Límite de creación de clientes removido intencionalmente para desarrollo.
+// En producción debería restaurarse un rate limit estricto para evitar abuso.
+// Aquí se expone un middleware 'passthrough' que no limita solicitudes.
+export const createCustomerRateLimit = (req: Request, res: Response, next: NextFunction): void => {
+  // Passthrough: no hacemos rate-limiting en este middleware durante desarrollo
+  next();
+};
 
 // Middleware para validar Content-Type en requests con body
 export const validateContentType = (req: Request, res: Response, next: NextFunction): void => {
